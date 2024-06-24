@@ -1,0 +1,32 @@
+{
+  "name": "ft-enpdoint",
+  "version": "1.0.0",
+  "description": "fintech application",
+  "main": "index.js",
+  "scripts": {
+    "serve": "nodemon src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/megamindcodex/ft-endpoint.git"
+  },
+  "author": "Megamind",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/megamindcodex/ft-endpoint/issues"
+  },
+  "homepage": "https://github.com/megamindcodex/ft-endpoint#readme",
+  "dependencies": {
+    "body-parser": "^1.20.2",
+    "cookie-parser": "^1.4.6",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.4.1",
+    "nodemailer": "^6.9.13"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.3"
+  }
+}
