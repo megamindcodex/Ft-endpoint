@@ -1,6 +1,7 @@
 const crypto = require("crypto");
 const User = require("../../models/user");
 const { send_email_to_user } = require("../sendEmail");
+
 const send_reset_code = async (email) => {
   try {
     if (!email) {
@@ -28,7 +29,10 @@ const send_reset_code = async (email) => {
       return {
         success: true,
         status: 200,
-        data: "Reset code sent successfully",
+        data: {
+          email: user.email,
+          message: "Error sending reset code to email",
+        },
         ExtraData: sentEmail.data,
       };
     }
@@ -37,7 +41,7 @@ const send_reset_code = async (email) => {
     return {
       success: true,
       status: 200,
-      data: "Reset code sent successfully",
+      data: { email: user.email, message: "Reset code sent successfully" },
     };
   } catch (err) {
     console.error(err.message, err);

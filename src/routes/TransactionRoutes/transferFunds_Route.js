@@ -5,25 +5,13 @@ const { verifyToken } = require("../../middleware/jwtAuth");
 const {
   transfer_funds,
 } = require("../../controller/TransactionLogics/transferFunds");
+const {
+  add_to_spend_and_save,
+} = require("../../controller/walletsLogic/spendAndSave/addToSpendAndSave");
 
 router.post("/tranfer_funds", verifyToken, async (req, res) => {
   try {
     const formData = req.body;
-
-    if (!formData) {
-      console.error("formData is undefined");
-      res.status(400).json({ error: "formData is undefined" });
-    } else {
-      for (let key in formData) {
-        if (formData[key] === null) {
-          console.error(`property ${key} is null.`);
-          res
-            .status(400)
-            .json({ error: `property ${key} in formData is null` });
-          return { success: false, error: `property ${key} is null` };
-        }
-      }
-    }
 
     const { accountNumber, amount } = formData;
     const senderId = req.userId;
@@ -34,10 +22,18 @@ router.post("/tranfer_funds", verifyToken, async (req, res) => {
     if (!receiver) {
       return res.status(404).json({ error: "Invalid account number" });
     }
+
+    if (receiver.accountNumber === sender.accountNumber) {
+      return res.status(400).json({
+        error: `${accountNumber} is your account number. You can only transfer funds to other acounts`,
+      });
+    }
     const transferParams = {
       senderUserName: sender.userName,
       receiverUserName: receiver.userName,
       amount: amount,
+      senderFinanceId: sender.finances,
+      receiverFinanceId: receiver.finances,
     };
 
     const result = await transfer_funds(transferParams);
@@ -46,13 +42,19 @@ router.post("/tranfer_funds", verifyToken, async (req, res) => {
       return res.status(result.status).json({ error: result.error });
     }
 
-    return res.status(200).json(result.data);
+    res.status(200).json(result.data);
+    const spendAndSaveParams = {
+      fundSpent: amount,
+      financeId: sender.finances,
+    };
+    await add_to_spend_and_save(spendAndSaveParams);
   } catch (err) {
     console.error(
       "Error running transfer_funds in /tranferFunds_Route.js",
       err.message,
       err
     );
+    res.status(500).json({ error: err });
   }
 });
 

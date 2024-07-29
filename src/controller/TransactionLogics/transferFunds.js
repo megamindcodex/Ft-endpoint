@@ -1,65 +1,121 @@
-const User = require("../../models/user");
+const Transaction = require("../../models/Transaction");
 const Finance = require("../../models/userFinance");
+const { generateReceipt } = require("../TransactionLogics/generateReceipt");
+const crypto = require("crypto");
+
+// const mongoose = require("mongoose");
 
 const transfer_funds = async (transferParams) => {
   try {
     if (!transferParams) {
-      console.error("transferParams is undefined");
-      return { success: false, error: "transferParams is undefined" };
-    } else {
-      for (let key in transferParams) {
-        if (transferParams[key] === null) {
-          console.error(`property ${key} is null.`);
-          return { success: false, error: `property ${key} is null` };
-        }
-      }
+      return {
+        success: false,
+        status: 400,
+        error: "transferParams is undefine",
+      };
     }
 
-    const { senderUserName, receiverUserName, amount } = transferParams;
+    const { senderFinanceId, receiverFinanceId, amount } = transferParams;
 
     // console.log(senderId, receiverId, amount);
 
-    const senderFinance = await Finance.findOne({ userName: senderUserName });
-    const receiverFinance = await Finance.findOne({
-      userName: receiverUserName,
-    });
-    // console.log(sender);
-    // console.log(receiver);
+    const senderFinance = await Finance.findById(senderFinanceId);
+    const receiverFinance = await Finance.findById(receiverFinanceId);
 
-    const senderOwealth = senderFinance.wallets.find(
-      (wallet) => wallet.type === "Owealth"
-    );
-    if (!senderOwealth) {
-      console.error("sender Owealth not found");
-    }
-    console.log(senderOwealth);
-
-    const receiverOwealth = receiverFinance.wallets.find(
-      (wallet) => wallet.type === "Owealth"
-    );
-    if (!receiverOwealth) {
-      console.error("receiver Owealth not found");
-    }
-    console.log(receiverOwealth);
-
-    if (senderOwealth.balance <= 0) {
-      console.error("Insufficient funds");
-      return { success: false, status: 400, error: "Insufficient funds" };
+    //  check if mainBalance is less than amount to be sent
+    if (senderFinance.mainBalance < amount) {
+      return { success: false, status: 400, error: "Inssuficient funds!" };
     }
 
-    senderOwealth.balance = Number(senderOwealth.balance) - Number(amount);
-    receiverOwealth.balance = Number(receiverOwealth.balance) + Number(amount);
+    // check if daily transaction limit is reached
+    if (
+      senderFinance.dailyTransaction === senderFinance.dailyTransactionLimit
+    ) {
+      console.log(
+        `Daily transaction Limit reached. upgrade your account to increase your transaction limit`
+      );
+      return {
+        success: false,
+        status: 400,
+        error: `Daily transaction Limit reached. upgrade your account to increase your transaction limit`,
+      };
+    }
+
+    // check if Amount to be sent exceed Dailt Tranaction Limit
+    if (senderFinance.dailyTransactionLimit < amount) {
+      console.log(
+        `your daily Transaction is ${senderFinance.dailyTransactionLimit}. Upgrade your transaction Limit.`
+      );
+      return {
+        success: false,
+        status: 400,
+        error: `your daily Transaction is ${senderFinance.dailyTransactionLimit}. Upgrade your transaction Limit.`,
+      };
+    }
+
+    senderFinance.mainBalance -= Number(amount);
+    senderFinance.dailyTransaction += Number(amount);
+
+    receiverFinance.mainBalance += Number(amount);
 
     try {
-      await senderFinance.save();
-      await receiverFinance.save();
+      const senderFinanceResult = await senderFinance.save();
+      const receiverFinanceResult = await receiverFinance.save();
     } catch (err) {
-      cosnole.error("Error saving Finance document:", err, err.mssage);
+      console.error(
+        "Error occurred while processing transaction in transferFund.js ",
+        err.message,
+        err
+      );
+      return { success: false, status: 500, error: err };
     }
 
-    console.log(senderOwealth);
-    console.log(receiverOwealth);
-    return { success: true, status: 200, data: "Transaction completed" };
+    const transactionId = generateTransactionId();
+
+    const senderParams = {
+      id: senderFinance.transactionId,
+      userName: senderFinance.userName,
+      type: "debit",
+      from: senderFinance.userName,
+      receiver: receiverFinance.userName,
+      amount: amount,
+      date: Date.now(),
+      transactionId: transactionId,
+    };
+
+    const receiverParams = {
+      id: receiverFinance.transactionId,
+      userName: receiverFinance.userName,
+      type: "credit",
+      from: senderFinance.userName,
+      receiver: receiverFinance.userName,
+      amount: amount,
+      date: Date.now(),
+      transactionId: transactionId,
+    };
+    const senderReceipt = await generateReceipt(senderParams);
+    const receiverReceipt = await generateReceipt(receiverParams);
+
+    if (!senderReceipt) {
+      return {
+        success: false,
+        status: 404,
+        error: "couldn't find sender receipt",
+      };
+    }
+    if (!receiverReceipt) {
+      return {
+        success: false,
+        status: 404,
+        error: "couldn't find Receiver receipt",
+      };
+    }
+
+    return {
+      success: true,
+      status: 200,
+      data: { message: "Transaction successfull", receipt: senderReceipt },
+    };
   } catch (err) {
     console.error(
       "Error sending funds at transferFunds.js file",
@@ -67,6 +123,17 @@ const transfer_funds = async (transferParams) => {
       err
     );
   }
+};
+
+const generateTransactionId = () => {
+  // Generate 10 random bytes (enough for 20 digits)
+  const buffer = crypto.randomBytes(20);
+
+  // Convert each byte to a digit (0-9) by taking modulo 10
+  const digits = Array.from(buffer, (byte) => (byte % 10).toString());
+
+  // Join the digits into a single string
+  return digits.join("");
 };
 
 module.exports = { transfer_funds };

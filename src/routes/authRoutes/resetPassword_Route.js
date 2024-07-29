@@ -16,7 +16,7 @@ router.post("/reset_password", async (req, res) => {
     }
   } catch (err) {
     console.error("Error in password reset Route", err.message, err);
-    throw err;
+    res.status(500).json({ error: err.message });
   }
 });
 

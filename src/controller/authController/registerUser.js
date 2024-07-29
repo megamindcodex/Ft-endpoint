@@ -1,7 +1,7 @@
 const User = require("../../models/user.js");
 const Finance = require("../../models/userFinance.js");
-
-let errors = [];
+const Transaction = require("../../models/Transaction.js");
+const crypto = require("crypto");
 
 const registerUser = async (formData) => {
   try {
@@ -25,15 +25,50 @@ const registerUser = async (formData) => {
       password,
     } = formData;
 
+    const cashBox = {
+      balance: 0,
+      dailyInterest: 0,
+      totalInterest: 0,
+      autoSave: false,
+    };
+
+    const safeBox = {
+      balance: 0,
+      dailyInterest: 0,
+      totalInterest: 0,
+      autoSave: false,
+      lastAutoSaved: Date.now(),
+    };
+    const spendAndSave = {
+      balance: 0,
+      activated: false,
+      percentage: 0,
+    };
+    const fixedSaving = {
+      balance: 0,
+      activated: false,
+    };
+    const targetSaving = {
+      activated: false,
+      targets: [],
+    };
+
     const newUserFinance = {
       userName: userName,
+      mainBalance: 0,
       wallets: [
-        { type: "Owealth", balance: 1000 },
-        { type: "Spend and save", balance: 0 },
-        { type: "Safe box", balance: 0 },
-        { type: "Fixed saving", balance: 0 },
+        {
+          cashBox: cashBox,
+          safeBox: safeBox,
+          spendAndSave: spendAndSave,
+          fixedSaving: fixedSaving,
+          targetSaving: targetSaving,
+        },
       ],
-      // transactions: {},
+      dailyTransaction: 0,
+      dailyTransactionLimit: 5000,
+      dailyTransactionLastResetDate: Date.now(),
+      transactionId: "pending",
     };
 
     const finance = await Finance.create(newUserFinance);
@@ -58,22 +93,36 @@ const registerUser = async (formData) => {
       birth: newBirthTime,
       password: password,
       finances: finance._id,
-      accountNumber: "0088456282",
+      accountNumber: generateAccountNumber(),
     };
     console.log(newUser);
     const user = await User.create(newUser);
+
+    if (!user) {
+      return { success: false, status: 400, error: "Error creating user" };
+    }
+
+    const newTransaction = {
+      userName: user.userName,
+      messages: [],
+    };
+
+    const userTransactions = await Transaction.create(newTransaction);
+
+    finance.transactionId = userTransactions._id;
+    await finance.save();
     return user;
   } catch (err) {
     console.error("Error Creating New user", err.message, err);
-    throw err;
+    return { success: false, status: 500, error: err };
   }
 };
 
-const check_if_userName_exists = async (userName) => {
+const check_if_userName_exist = async (userName) => {
   try {
     const userNameExist = await User.exists({ userName });
 
-    if (userNameExist !== null) {
+    if (userNameExist) {
       return true;
     } else {
       return false;
@@ -83,7 +132,7 @@ const check_if_userName_exists = async (userName) => {
   }
 };
 
-const check_if_email_exists = async (email) => {
+const check_if_email_exist = async (email) => {
   try {
     const emailExist = await User.exists({ email });
 
@@ -97,8 +146,19 @@ const check_if_email_exists = async (email) => {
   }
 };
 
+const generateAccountNumber = () => {
+  // Generate 10 random bytes (enough for 20 digits)
+  const buffer = crypto.randomBytes(7);
+
+  // Convert each byte to a digit (0-9) by taking modulo 10
+  const digits = Array.from(buffer, (byte) => (byte % 10).toString());
+
+  // Join the digits into a single string and prepend '149'
+  return "149" + digits.join("").slice(0, 7);
+};
+
 module.exports = {
   registerUser,
-  check_if_userName_exists,
-  check_if_email_exists,
+  check_if_userName_exist,
+  check_if_email_exist,
 };

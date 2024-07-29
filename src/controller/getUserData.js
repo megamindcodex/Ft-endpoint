@@ -8,6 +8,7 @@ const get_user_data = async (userId) => {
     }
 
     const user = await User.findById(userId).populate("finances");
+    // const user = await User.findById(userId);
     // console.log(user.finances.wallets[0].balance);
 
     return user;

@@ -22,8 +22,9 @@ const userSchema = new mongoose.Schema({
     required: true,
   },
   birth: {
-    type: Object,
-    required: true,
+    month: { type: Number, required: true },
+    day: { type: Number, required: true },
+    year: { type: Number, required: true },
   },
   password: {
     type: String,

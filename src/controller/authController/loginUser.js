@@ -10,12 +10,13 @@ const loginUser = async (formData) => {
     const user = await User.findOne({ email: email });
 
     if (!user) {
-      return { success: false, data: "User not found" };
+      console.log("user not found");
+      return { success: false, status: 404, error: "User not found" };
     }
 
     // check if password matches
     if (password !== user.password) {
-      return { success: false, data: "Incorrect password" };
+      return { success: false, status: 400, error: "Incorrect password" };
     }
 
     // id this point is reached, both user exists and password matches

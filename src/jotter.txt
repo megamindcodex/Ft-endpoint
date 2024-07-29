@@ -1,0 +1,9 @@
+
+
+
+activate spend & and save
+route name = 
+/api/activate_spen_and_save >> PUT request,
+/api/deactivate_spend_and_save >> PUT request, 
+
+request body = {percentage} //percentage of main balance to be withdrawn after every payment or transfer

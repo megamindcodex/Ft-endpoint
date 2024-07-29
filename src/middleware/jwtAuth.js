@@ -32,6 +32,7 @@ const verifyToken = (req, res, next) => {
 
     //Logic to verify token
     const accessToken = req.cookies["fintech-access-token"];
+    // console.log(accessToken);
 
     if (!accessToken)
       return res.status(401).json({ error: "Not Authenticated!" });
