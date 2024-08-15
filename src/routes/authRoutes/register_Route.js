@@ -24,34 +24,29 @@ router.post("/sign-up", async (req, res) => {
     console.log(formData);
     const userNameExist = await check_if_userName_exist(formData.userName);
     const emailExist = await check_if_email_exist(formData.email);
-    let errorMsg = [];
 
     if (userNameExist) {
-      errorMsg.push("Username taken");
+      return res.status(409).json({ error: "Username already in use" });
     }
     if (emailExist) {
-      errorMsg.push("Email already in use");
+      return res.status(409).json({ error: "Email already exists" });
     }
 
-    if (errorMsg.length > 0) {
-      res.status(409).json({ errors: errorMsg });
-    } else {
-      const user = await registerUser(formData);
+    const user = await registerUser(formData);
 
-      if (user) {
-        const accessToken = createToken(user._id);
+    if (user) {
+      const accessToken = createToken(user._id);
 
-        if (accessToken) {
-          // console.log("token generated:", accessToken);
-          res.cookie("fintech-access-token", accessToken, {
-            httpOnly: false, // Ensure this is false if you need to access the cookie in client-side JS
-            secure: false, // Set to true if using HTTPS
-            path: "/", // path for which the cookie is valid
-            //this milliseconds is equivalent to 12 hours
-            maxAge: 43200000,
-          });
-          res.status(201).json({ message: "Registration successful" });
-        }
+      if (accessToken) {
+        // console.log("token generated:", accessToken);
+        res.cookie("fintech-access-token", accessToken, {
+          httpOnly: false, // Ensure this is false if you need to access the cookie in client-side JS
+          secure: false, // Set to true if using HTTPS
+          path: "/", // path for which the cookie is valid
+          //this milliseconds is equivalent to 12 hours
+          maxAge: 43200000,
+        });
+        return res.status(201).json({ message: "signup successful" });
       }
     }
   } catch (err) {

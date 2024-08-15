@@ -31,7 +31,7 @@ const send_reset_code = async (email) => {
         status: 200,
         data: {
           email: user.email,
-          message: "Error sending reset code to email",
+          message: "Error sending reset code to email. Try again",
         },
         ExtraData: sentEmail.data,
       };
@@ -41,7 +41,10 @@ const send_reset_code = async (email) => {
     return {
       success: true,
       status: 200,
-      data: { email: user.email, message: "Reset code sent successfully" },
+      data: {
+        email: user.email,
+        message: "Reset code sent to your email address",
+      },
     };
   } catch (err) {
     console.error(err.message, err);

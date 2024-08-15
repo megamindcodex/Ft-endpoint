@@ -20,8 +20,8 @@ const registerUser = async (formData) => {
       phoneNumber,
       email,
       userName,
-      gender,
-      timeOfBirth,
+      // gender,
+      // timeOfBirth,
       password,
     } = formData;
 
@@ -78,19 +78,19 @@ const registerUser = async (formData) => {
       return null;
     }
 
-    const newBirthTime = {
-      date: timeOfBirth.date,
-      month: timeOfBirth.month,
-      year: timeOfBirth.year,
-    };
+    // const newBirthTime = {
+    //   date: timeOfBirth.date,
+    //   month: timeOfBirth.month,
+    //   year: timeOfBirth.year,
+    // };
 
     const newUser = {
       fullName: fullName,
       phoneNumber: phoneNumber,
       email: email,
       userName: userName,
-      gender: gender,
-      birth: newBirthTime,
+      // gender: gender,
+      // birth: newBirthTime,
       password: password,
       finances: finance._id,
       accountNumber: generateAccountNumber(),
@@ -136,7 +136,7 @@ const check_if_email_exist = async (email) => {
   try {
     const emailExist = await User.exists({ email });
 
-    if (emailExist !== null) {
+    if (emailExist) {
       return true;
     } else {
       return false;

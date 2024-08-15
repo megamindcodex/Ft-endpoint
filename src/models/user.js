@@ -17,15 +17,15 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  gender: {
-    type: String,
-    required: true,
-  },
-  birth: {
-    month: { type: Number, required: true },
-    day: { type: Number, required: true },
-    year: { type: Number, required: true },
-  },
+  // gender: {
+  //   type: String,
+  //   required: true,
+  // },
+  // birth: {
+  //   month: { type: Number, required: true },
+  //   day: { type: Number, required: true },
+  //   year: { type: Number, required: true },
+  // },
   password: {
     type: String,
     required: true,

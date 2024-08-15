@@ -27,6 +27,7 @@ const reset_password = async (formData) => {
     }
 
     if (resetCode !== user._resetCode) {
+      console.error("invalid reset code");
       return { success: false, status: 400, error: "Invalid reset code" };
     }
 

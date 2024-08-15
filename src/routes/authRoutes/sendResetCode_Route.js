@@ -10,11 +10,11 @@ router.post("/send_reset_code", async (req, res) => {
 
     const result = await send_reset_code(email);
 
-    if (!result.success && result.status !== 200) {
-      res.status(result.status).json({ error: result.data });
+    if (!result.success) {
+      return res.status(result.status).json({ error: result.data });
     }
 
-    res.status(result.status).json(result.data);
+    return res.status(result.status).json(result.data);
   } catch (err) {
     console.error(
       "Error sending reset code at sendResetCode_Route",
