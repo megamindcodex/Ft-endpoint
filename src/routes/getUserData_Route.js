@@ -6,21 +6,20 @@ const { get_user_data } = require("../controller/getUserData");
 router.get("/get_user_data", verifyToken, async (req, res) => {
   try {
     if (!req.userId) {
-      return res.status(401).json({ message: "Not Authorised" });
+      return res.status(401).json({ error: "Not Authorised" });
     }
 
-    const user = await get_user_data(req.userId);
+    const result = await get_user_data(req.userId);
 
-    if (!user) {
+    if (!result.success) {
       // Respond with 404 Not Found if user is undefined
-      return res.status(404).json({ error: "User not found" });
+      return res.status(result.status).json(result.error);
     }
 
-    console.log(`user found : ${user}`);
-    res.status(200).json(user);
+    console.log(`user found : ${result.data}`);
+    return res.status(200).json(result.data);
   } catch (err) {
     console.error("Error runing get_user_data function", err.message, err);
-    throw err;
   }
 });
 

@@ -9,11 +9,12 @@ const {
   add_to_spend_and_save,
 } = require("../../controller/walletsLogic/spendAndSave/addToSpendAndSave");
 
-router.post("/tranfer_funds", verifyToken, async (req, res) => {
+router.post("/transfer_funds", verifyToken, async (req, res) => {
   try {
     const formData = req.body;
+    // console.log(formData);
 
-    const { accountNumber, amount } = formData;
+    const { accountNumber, amount, description } = formData;
     const senderId = req.userId;
 
     const sender = await User.findById(senderId);
@@ -30,8 +31,11 @@ router.post("/tranfer_funds", verifyToken, async (req, res) => {
     }
     const transferParams = {
       senderUserName: sender.userName,
+      senderAccount: sender.accountNumber,
       receiverUserName: receiver.userName,
+      receiverAccount: receiver.accountNumber,
       amount: amount,
+      description: description,
       senderFinanceId: sender.finances,
       receiverFinanceId: receiver.finances,
     };
@@ -43,6 +47,7 @@ router.post("/tranfer_funds", verifyToken, async (req, res) => {
     }
 
     res.status(200).json(result.data);
+    console.log(result.data);
     const spendAndSaveParams = {
       fundSpent: amount,
       financeId: sender.finances,

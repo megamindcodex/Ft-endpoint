@@ -9,7 +9,7 @@ const app = express();
 require("dotenv").config();
 
 // Specify multiple origins in an array
-const allowedOrigins = ["http://localhost:5173"];
+const allowedOrigins = ["http://localhost:5173", "https://ptf1k30m-5173.uks1.devtunnels.ms"];
 
 app.use(
   cors({
@@ -75,7 +75,10 @@ const resetPasswordRoute = require("./routes/authRoutes/resetPassword_Route");
 
 // ################################################
 const updatePasswordRoute = require("./routes/updatePassword_Route");
+
 const transferFundsRoute = require("./routes/TransactionRoutes/transferFunds_Route");
+const getTransactionsRoute = require("./routes/TransactionRoutes/getTransactions_Route");
+const getReceiverUserName = require("./routes/TransactionRoutes/getReceiverUsername_Route");
 
 const spendAndSaveActivationRoute = require("./routes/walletsRoutes/spendAndSave/spendAndSaveActivation_Route");
 const withdrawSpendAndSaveRoute = require("./routes/walletsRoutes/spendAndSave/withdrawSpedAndSave_Route");
@@ -94,6 +97,8 @@ app.use("/auth", resetPasswordRoute);
 app.use("/api", getUserDataRoute);
 app.use("/api", updatePasswordRoute);
 app.use("/api", transferFundsRoute);
+app.use("/api", getReceiverUserName);
+app.use("/api", getTransactionsRoute);
 
 app.use("/api", spendAndSaveActivationRoute);
 app.use("/api", withdrawSpendAndSaveRoute);

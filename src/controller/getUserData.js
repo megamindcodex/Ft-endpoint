@@ -4,14 +4,17 @@ const get_user_data = async (userId) => {
   try {
     if (!userId) {
       console.error("userId is undefined");
-      return null;
+      return { success: false, status: 400, error: "userId is undefined" };
     }
 
     const user = await User.findById(userId).populate("finances");
     // const user = await User.findById(userId);
     // console.log(user.finances.wallets[0].balance);
+    if (!user) {
+      return { success: false, status: 404, error: "User not Found!" };
+    }
 
-    return user;
+    return { success: true, status: 200, data: user };
   } catch (err) {
     console.error("Couldn't get user data", err.message, err);
     throw err;

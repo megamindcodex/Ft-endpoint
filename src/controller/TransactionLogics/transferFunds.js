@@ -1,3 +1,4 @@
+const { timeStamp } = require("console");
 const Transaction = require("../../models/Transaction");
 const Finance = require("../../models/userFinance");
 const { generateReceipt } = require("../TransactionLogics/generateReceipt");
@@ -15,7 +16,8 @@ const transfer_funds = async (transferParams) => {
       };
     }
 
-    const { senderFinanceId, receiverFinanceId, amount } = transferParams;
+    const {senderAccount, receiverAccount, senderFinanceId, receiverFinanceId, amount, description } =
+      transferParams;
 
     // console.log(senderId, receiverId, amount);
 
@@ -24,7 +26,7 @@ const transfer_funds = async (transferParams) => {
 
     //  check if mainBalance is less than amount to be sent
     if (senderFinance.mainBalance < amount) {
-      return { success: false, status: 400, error: "Inssuficient funds!" };
+      return { success: false, status: 400, error: "Insuficient funds!" };
     }
 
     // check if daily transaction limit is reached
@@ -54,6 +56,7 @@ const transfer_funds = async (transferParams) => {
     }
 
     senderFinance.mainBalance -= Number(amount);
+    // top up daily transaction
     senderFinance.dailyTransaction += Number(amount);
 
     receiverFinance.mainBalance += Number(amount);
@@ -71,27 +74,35 @@ const transfer_funds = async (transferParams) => {
     }
 
     const transactionId = generateTransactionId();
+    
+    const timestamp = new Date().toISOString();
 
     const senderParams = {
       id: senderFinance.transactionId,
-      userName: senderFinance.userName,
       type: "debit",
-      from: senderFinance.userName,
+      sender: senderFinance.userName,
+      senderAccount: senderAccount,
       receiver: receiverFinance.userName,
+      receiverAccount: receiverAccount,
       amount: amount,
-      date: Date.now(),
+      description: description,
+      timestamp: new Date().toISOString(),
       transactionId: transactionId,
+      owner: "sender",
     };
 
     const receiverParams = {
       id: receiverFinance.transactionId,
-      userName: receiverFinance.userName,
       type: "credit",
-      from: senderFinance.userName,
+      sender: senderFinance.userName,
+      senderAccount: senderAccount,
       receiver: receiverFinance.userName,
+      receiverAccount: receiverAccount,
       amount: amount,
-      date: Date.now(),
+      description: description,
+      timestamp: new Date().toISOString(),
       transactionId: transactionId,
+      owner: "receiver",
     };
     const senderReceipt = await generateReceipt(senderParams);
     const receiverReceipt = await generateReceipt(receiverParams);
@@ -100,21 +111,21 @@ const transfer_funds = async (transferParams) => {
       return {
         success: false,
         status: 404,
-        error: "couldn't find sender receipt",
+        error: "couldn't generate sender receipt",
       };
     }
     if (!receiverReceipt) {
       return {
         success: false,
         status: 404,
-        error: "couldn't find Receiver receipt",
+        error: "couldn't generate Receiver receipt",
       };
     }
 
     return {
       success: true,
       status: 200,
-      data: { message: "Transaction successfull", receipt: senderReceipt },
+      data: { message: "Transaction successfull" },
     };
   } catch (err) {
     console.error(

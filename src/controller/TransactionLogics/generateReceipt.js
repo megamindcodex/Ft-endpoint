@@ -23,8 +23,19 @@ const generateReceipt = async (transactionParams) => {
       }
     }
 
-    const { id, userName, type, from, receiver, amount, date, transactionId } =
-      transactionParams;
+    const {
+      id,
+      type,
+      sender,
+      senderAccount,
+      receiver,
+      receiverAccount,
+      amount,
+      description,
+      timestamp,
+      transactionId,
+      owner,
+    } = transactionParams;
     const transaction = await Transaction.findById(id);
 
     if (!transaction) {
@@ -36,17 +47,37 @@ const generateReceipt = async (transactionParams) => {
       };
     }
 
-    transaction.messages.push({
-      type: type,
-      status: "pending",
-      subject: `Transfer from ${userName} to ${receiver}`,
-      from: from,
-      receiver: receiver,
-      ammount: `${amount}`,
-      decription: "",
-      date: date,
-      transactionId: transactionId,
-    });
+    if (owner === "sender") {
+      transaction.messages.push({
+        type: type,
+        status: "successful",
+        subject: `Send to ${receiver.toUpperCase()}`,
+        sender: sender,
+        senderAccount: senderAccount,
+        receiver: receiver,
+        receiverAccount: receiverAccount,
+        amount: `${amount}`,
+        decription: description,
+        timestamp: timestamp,
+        transactionId: transactionId,
+      });
+    }
+
+    if (owner === "receiver") {
+      transaction.messages.push({
+        type: type,
+        status: "successful",
+        subject: `Received from ${sender.toUpperCase()}`,
+        sender: sender,
+        senderAccount: senderAccount,
+        receiver: receiver,
+        receiverAccount: receiverAccount,
+        amount: `${amount}`,
+        decription: description,
+        timestamp: timestamp,
+        transactionId: transactionId,
+      });
+    }
 
     await transaction.save();
     // console.log(transaction.messages[transaction.messages.length - 1]);
