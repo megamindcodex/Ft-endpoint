@@ -26,13 +26,15 @@ router.post("/login", async (req, res) => {
     if (!accessToken) {
       throw new Error("accessToken is undefined");
     }
+
     res.cookie("fintech-access-token", accessToken, {
       httpOnly: false, // Ensure this is false if you need to access the cookie in client-side JS
+      sameSite: "None",  // Explicitly set SameSite to None for cross-site requests
       secure: true, // Set to true if using HTTPS
       path: "/", // path for which the cookie is valid
+      domain: "http://test-fintech.netlify.app",
       //this milliseconds is equivalent to 12 hours
       maxAge: 43200000,
-      sameSite: "None"  // Explicitly set SameSite to None for cross-site requests
     });
 
     return res.status(200).json({ userData: result.data, message: "login successful" });
