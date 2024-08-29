@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const { ref } = require("vue");
 
 const userSchema = new mongoose.Schema({
   fullName: {
