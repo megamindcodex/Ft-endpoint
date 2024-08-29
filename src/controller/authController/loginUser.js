@@ -7,7 +7,7 @@ const User = require("../../models/user");
 const loginUser = async (formData) => {
   try {
     const { email, password } = formData;
-    const user = await User.findOne({ email: email });
+    const user = await User.findOne({ email: email }).populate("finances").populate("transactions").populate("notification");;
 
     if (!user) {
       console.log("user not found");

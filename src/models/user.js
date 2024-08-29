@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { ref } = require("vue");
 
 const userSchema = new mongoose.Schema({
   fullName: {
@@ -37,6 +38,14 @@ const userSchema = new mongoose.Schema({
     // Array of references to Finance documents
     type: mongoose.Schema.Types.ObjectId,
     ref: "Finance", // Reference to the Finance model
+  },
+  transactions: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Transaction", // Reference to the Transaction model
+  },
+  notification: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Notification", // Reference to the Notification model
   },
   accountNumber: {
     type: String,

@@ -1,6 +1,7 @@
 const User = require("../../models/user.js");
 const Finance = require("../../models/userFinance.js");
 const Transaction = require("../../models/Transaction.js");
+const Notification = require("../../models/notification.js");
 const crypto = require("crypto");
 
 const registerUser = async (formData) => {
@@ -68,14 +69,43 @@ const registerUser = async (formData) => {
       dailyTransaction: 0,
       dailyTransactionLimit: 5000,
       dailyTransactionLastResetDate: Date.now(),
-      transactionId: "pending",
     };
+
+
+    const newTransaction = {
+      userName: "pending",
+      messages: [],
+    };
+
+    const newNotificaton = {
+      userName: "pending",
+      messages: []
+    }
+
+
+
+
 
     const finance = await Finance.create(newUserFinance);
 
     if (!finance) {
       console.error("Error creating Finance object for user", err.message, err);
       return null;
+    }
+
+
+    const transactions = await Transaction.create(newTransaction);
+
+    if (!transactions) {
+      console.error("Error creating Transaction object for user", err.message, err);
+      return null;
+    }
+
+    const notification = await Notification.create(newNotificaton)
+
+    if (!notification) {
+      console.error("Error creating Notification object for user", err.message, err);
+      return null
     }
 
     // const newBirthTime = {
@@ -93,24 +123,23 @@ const registerUser = async (formData) => {
       // birth: newBirthTime,
       password: password,
       finances: finance._id,
+      transactions: transactions._id,
+      notification: notification._id,
       accountNumber: generateAccountNumber(),
     };
-    console.log(newUser);
+    // console.log(newUser);
     const user = await User.create(newUser);
 
     if (!user) {
       return { success: false, status: 400, error: "Error creating user" };
     }
 
-    const newTransaction = {
-      userName: user.userName,
-      messages: [],
-    };
 
-    const userTransactions = await Transaction.create(newTransaction);
-
-    finance.transactionId = userTransactions._id;
+    transactions.userName = user.userName
+    notification.userName = user.userName
     await finance.save();
+    await transactions.save()
+    await notification.save()
     return user;
   } catch (err) {
     console.error("Error Creating New user", err.message, err);

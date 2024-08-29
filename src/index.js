@@ -8,6 +8,8 @@ const { run_background_task } = require("./backgroundTask/orchestrator");
 const app = express();
 require("dotenv").config();
 
+
+
 // Specify multiple origins in an array
 const allowedOrigins = ["http://localhost:5173", "https://ptf1k30m-5173.uks1.devtunnels.ms"];
 
@@ -70,6 +72,7 @@ const startServer = async () => {
 const registerUserRoute = require("./routes/authRoutes/register_Route");
 const loginUserRoute = require("./routes/authRoutes/login_Route");
 const getUserDataRoute = require("./routes/getUserData_Route");
+const updateNotificationRoute = require("./routes/updateNotification_Route")
 const sendResetCodeRoute = require("./routes/authRoutes/sendResetCode_Route");
 const resetPasswordRoute = require("./routes/authRoutes/resetPassword_Route");
 
@@ -95,6 +98,7 @@ app.use("/auth", resetPasswordRoute);
 
 // use Api Routes
 app.use("/api", getUserDataRoute);
+app.use("/api", updateNotificationRoute)
 app.use("/api", updatePasswordRoute);
 app.use("/api", transferFundsRoute);
 app.use("/api", getReceiverUserName);

@@ -25,7 +25,6 @@ router.get("/get_receiver_userName", verifyToken, async (req, res) => {
       });
     }
 
-    console.log(receiver);
 
     if (!receiver) {
       console.log("Receiver not found");

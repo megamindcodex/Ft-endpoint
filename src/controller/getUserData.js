@@ -7,9 +7,11 @@ const get_user_data = async (userId) => {
       return { success: false, status: 400, error: "userId is undefined" };
     }
 
-    const user = await User.findById(userId).populate("finances");
+    const user = await User.findById(userId).populate("finances").populate("transactions").populate("notification");
     // const user = await User.findById(userId);
-    // console.log(user.finances.wallets[0].balance);
+    // const finance = await user.finances.populate("transactions");
+    // console.log(finance)
+    // console.log(user);
     if (!user) {
       return { success: false, status: 404, error: "User not Found!" };
     }

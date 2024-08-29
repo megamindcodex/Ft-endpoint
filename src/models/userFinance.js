@@ -111,10 +111,6 @@ const financeSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
-  transactionId: {
-    type: String,
-    required: true,
-  },
 });
 
 const Finance = mongoose.model("Finance", financeSchema);

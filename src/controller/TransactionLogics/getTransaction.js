@@ -13,7 +13,7 @@ const get_user_transactions = async (userId) => {
       console.log("User not found");
       return { success: false, status: 404, error: "user not found" };
     }
-    console.log(`userName: ${user.userName}`);
+    // console.log(`userName: ${user.userName}`);
 
     const transactions = await Transaction.findOne({ userName: user.userName });
 
@@ -22,12 +22,13 @@ const get_user_transactions = async (userId) => {
       return { success: false, status: 404, error: "Transaction not found" };
     }
 
-    console.log(`User transaction found: ${transactions.messages}`);
+    // console.log(`User transaction found: ${transactions.messages}`);
 
     return {
       success: true,
       status: 200,
       data: transactions.messages,
+      test: transactions.userName
     };
   } catch (err) {
     console.error("couldn't get user transactions", err, err.message);

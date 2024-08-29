@@ -35,7 +35,7 @@ router.post("/login", async (req, res) => {
       // domain: "http://localhost:5173/", // domain for which the cookie is valid
     });
 
-    return res.status(200).json({ message: "login successful" });
+    return res.status(200).json({ userData: result.data, message: "login successful" });
   } catch (err) {
     console.error("An error occurred at loginRoute", err.message, err);
     // Optionally, handle the error differently depending on its type or message

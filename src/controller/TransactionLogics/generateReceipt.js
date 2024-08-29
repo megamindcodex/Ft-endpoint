@@ -1,5 +1,6 @@
 const Transaction = require("../../models/Transaction");
 // const User = require("../../models/user");
+// const notify_client = require("../../webhook/notify")
 
 const generateReceipt = async (transactionParams) => {
   try {
@@ -25,6 +26,7 @@ const generateReceipt = async (transactionParams) => {
 
     const {
       id,
+      userName,
       type,
       sender,
       senderAccount,
@@ -36,7 +38,7 @@ const generateReceipt = async (transactionParams) => {
       transactionId,
       owner,
     } = transactionParams;
-    const transaction = await Transaction.findById(id);
+    const transaction = await Transaction.findOne({ userName: userName });
 
     if (!transaction) {
       console.error("couldn't find transaction", transaction);
@@ -79,9 +81,13 @@ const generateReceipt = async (transactionParams) => {
       });
     }
 
-    await transaction.save();
     // console.log(transaction.messages[transaction.messages.length - 1]);
+
+    await transaction.save();
+
+    // console.log(`recent transaction${JSON.stringify(transaction.messages[transaction.messages.length - 1])}`)
     return transaction.messages[transaction.messages.length - 1];
+
   } catch (err) {
     console.error(
       "Error generating transaction receipt in generateReceipt.js",

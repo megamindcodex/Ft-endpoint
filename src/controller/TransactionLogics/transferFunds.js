@@ -3,6 +3,7 @@ const Transaction = require("../../models/Transaction");
 const Finance = require("../../models/userFinance");
 const { generateReceipt } = require("../TransactionLogics/generateReceipt");
 const crypto = require("crypto");
+const addNotification = require("../../controller/TransactionLogics/notificationLogic")
 
 // const mongoose = require("mongoose");
 
@@ -16,7 +17,7 @@ const transfer_funds = async (transferParams) => {
       };
     }
 
-    const {senderAccount, receiverAccount, senderFinanceId, receiverFinanceId, amount, description } =
+    const { senderAccount, receiverAccount, senderFinanceId, receiverFinanceId, amount, description } =
       transferParams;
 
     // console.log(senderId, receiverId, amount);
@@ -74,11 +75,10 @@ const transfer_funds = async (transferParams) => {
     }
 
     const transactionId = generateTransactionId();
-    
-    const timestamp = new Date().toISOString();
 
     const senderParams = {
-      id: senderFinance.transactionId,
+      id: senderFinance._id,
+      userName: senderFinance.userName,
       type: "debit",
       sender: senderFinance.userName,
       senderAccount: senderAccount,
@@ -92,7 +92,8 @@ const transfer_funds = async (transferParams) => {
     };
 
     const receiverParams = {
-      id: receiverFinance.transactionId,
+      id: receiverFinance._id,
+      userName: receiverFinance.userName,
       type: "credit",
       sender: senderFinance.userName,
       senderAccount: senderAccount,
@@ -104,23 +105,38 @@ const transfer_funds = async (transferParams) => {
       transactionId: transactionId,
       owner: "receiver",
     };
+
     const senderReceipt = await generateReceipt(senderParams);
     const receiverReceipt = await generateReceipt(receiverParams);
 
     if (!senderReceipt) {
       return {
         success: false,
-        status: 404,
+        status: 500,
         error: "couldn't generate sender receipt",
       };
     }
+
     if (!receiverReceipt) {
       return {
         success: false,
-        status: 404,
+        status: 500,
         error: "couldn't generate Receiver receipt",
       };
     }
+
+    // add notification for the Receiver to the database
+    const receiverNotificationData = {
+      title: "Incoming Transafer Successfull",
+      subject: `${senderFinance.userName} has sent you $${amount}`,
+      subjectId: receiverReceipt.transactionId,
+      read: false,
+      newMessage: true
+    }
+
+    const receiverNotification = await addNotification(receiverNotificationData, receiverFinance.userName)
+    // console.log(receiverNotification)
+
 
     return {
       success: true,
