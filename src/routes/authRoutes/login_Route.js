@@ -32,6 +32,7 @@ router.post("/login", async (req, res) => {
       path: "/", // path for which the cookie is valid
       //this milliseconds is equivalent to 12 hours
       maxAge: 43200000,
+      sameSite: "None"  // Explicitly set SameSite to None for cross-site requests
     });
 
     return res.status(200).json({ userData: result.data, message: "login successful" });
