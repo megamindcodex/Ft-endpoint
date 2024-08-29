@@ -6,7 +6,12 @@ const cookieParser = require("cookie-parser");
 const { run_background_task } = require("./backgroundTask/orchestrator");
 
 const app = express();
-require("dotenv").config();
+
+const environment = process.env.NODE_ENV || 'development'; // 'production' or 'development'
+
+const envFile = environment === 'production' ? '.env.production' : '.env.development';
+
+require("dotenv").config({ path: envFile });
 
 
 
@@ -36,11 +41,11 @@ app.use(
 app.use(bodyParser.json());
 app.use(cookieParser());
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT
 const connectDB = async () => {
   try {
     //connection URL
-    const db_URI = process.env.DB_URI;
+    const db_URI = process.env.DB_URI
 
     if (!db_URI) {
       console.error("mongodb URI is required");
