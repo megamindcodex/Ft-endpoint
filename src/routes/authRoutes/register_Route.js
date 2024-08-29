@@ -40,11 +40,12 @@ router.post("/sign-up", async (req, res) => {
       if (accessToken) {
         // console.log("token generated:", accessToken);
         res.cookie("fintech-access-token", accessToken, {
-          httpOnly: true, // Ensure this is false if you need to access the cookie in client-side JS
+          httpOnly: false, // Ensure this is false if you need to access the cookie in client-side JS
           secure: true, // Set to true if using HTTPS
           path: "/", // path for which the cookie is valid
           //this milliseconds is equivalent to 12 hours
           maxAge: 43200000,
+          sameSite: "None"  // Explicitly set SameSite to None for cross-site requests
         });
         return res.status(201).json({ userData: user, message: "Signup successful" });
       }
