@@ -19,7 +19,7 @@ const loginUser = async (formData) => {
       return { success: false, status: 400, error: "Incorrect password" };
     }
 
-    // id this point is reached, both user exists and password matches
+    // if this point is reached, it mean the user exists and password matches
     console.log(user);
     return { success: true, data: user };
   } catch (err) {
