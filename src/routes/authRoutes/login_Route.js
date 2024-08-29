@@ -28,7 +28,7 @@ router.post("/login", async (req, res) => {
     }
     res.cookie("fintech-access-token", accessToken, {
       httpOnly: false, // Ensure this is false if you need to access the cookie in client-side JS
-      secure: false, // Set to true if using HTTPS
+      secure: true, // Set to true if using HTTPS
       path: "/", // path for which the cookie is valid
       //this milliseconds is equivalent to 12 hours
       maxAge: 43200000,

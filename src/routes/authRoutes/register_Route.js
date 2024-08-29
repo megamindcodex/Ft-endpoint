@@ -46,7 +46,7 @@ router.post("/sign-up", async (req, res) => {
           //this milliseconds is equivalent to 12 hours
           maxAge: 43200000,
         });
-        return res.status(201).json({ message: "signup successful" });
+        return res.status(201).json({ userData: user, message: "Signup successful" });
       }
     }
   } catch (err) {
