@@ -16,7 +16,7 @@ require("dotenv").config({ path: envFile });
 
 
 // Specify multiple origins in an array
-const allowedOrigins = ["http://localhost:5173", "https://ptf1k30m-5173.uks1.devtunnels.ms"];
+const allowedOrigins = ["http://localhost:5173", "https://test-fintech.netlify.app"];
 
 app.use(
   cors({
