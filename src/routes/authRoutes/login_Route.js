@@ -32,7 +32,7 @@ router.post("/login", async (req, res) => {
       path: "/", // path for which the cookie is valid
       //this milliseconds is equivalent to 12 hours
       maxAge: 43200000,
-      domain: ["http://localhost:5173/", "https://ft-endpoint.onrender.com/"], // domain for which the cookie is valid
+      domain: ["http://localhost:5173/", "https://ft-endpoint.onrender.com"], // domain for which the cookie is valid
     });
 
     return res.status(200).json({ userData: result.data, message: "login successful" });
