@@ -4,16 +4,12 @@ const Notification = require("../../models/notification")
 
 const addNotification = async (notificationData, userName) => {
     try {
-
-
         const notification = await Notification.findOne({ userName: userName })
 
         if (!notification) {
             console.log(`${userName} Notification not found`)
             return { success: false, error: `${userName} Notification not found` }
         }
-
-
 
         notification.messages.push(notificationData)
 
