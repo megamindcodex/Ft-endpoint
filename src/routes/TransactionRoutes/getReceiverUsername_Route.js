@@ -6,7 +6,7 @@ const { verifyToken } = require("../../middleware/jwtAuth");
 router.get("/get_receiver_userName", verifyToken, async (req, res) => {
   try {
     const accountNumber = req.query.accountNumber;
-    console.log(req.params);
+    // console.log(req.query);
 
     if (accountNumber === undefined || accountNumber === null) {
       console.log("Account number is required");
@@ -15,9 +15,16 @@ router.get("/get_receiver_userName", verifyToken, async (req, res) => {
     // console.log(`account number: ${accountNumber}`);
 
     const user = await User.findById(req.userId);
+    // console.log(`user: ${user}`)
     const userAccountNumber = user.accountNumber;
 
     const receiver = await User.findOne({ accountNumber: accountNumber });
+
+    if (!receiver) {
+      console.log("Receiver not found");
+      return res.status(404).json({ error: "Invalid account number" });
+    }
+
 
     if (userAccountNumber === receiver.accountNumber) {
       return res.status(400).json({
@@ -25,11 +32,6 @@ router.get("/get_receiver_userName", verifyToken, async (req, res) => {
       });
     }
 
-
-    if (!receiver) {
-      console.log("Receiver not found");
-      return res.status(404).json({ error: "Invalid account number" });
-    }
 
     console.log(receiver.userName);
     return res.status(200).json(receiver.userName);

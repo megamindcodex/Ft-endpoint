@@ -21,13 +21,16 @@ router.post("/transfer_funds", verifyToken, async (req, res) => {
     const senderId = req.userId;
 
     const sender = await User.findById(senderId);
+    console.log(sender)
     const receiver = await User.findOne({ accountNumber: accountNumber });
 
     if (!receiver) {
+      console.log("receiver not found")
       return res.status(404).json({ error: "Invalid account number" });
     }
 
     if (receiver.accountNumber === sender.accountNumber) {
+      console.log(`${accountNumber} is your account number. You can only transfer funds to other acounts`)
       return res.status(400).json({
         error: `${accountNumber} is your account number. You can only transfer funds to other acounts`,
       });
