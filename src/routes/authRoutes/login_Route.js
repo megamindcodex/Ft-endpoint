@@ -32,7 +32,6 @@ router.post("/login", async (req, res) => {
       sameSite: "None",  // Explicitly set SameSite to None for cross-site requests
       secure: true, // Set to true if using HTTPS
       path: "/", // path for which the cookie is valid
-      domain: "http://test-fintech.netlify.app",
       //this milliseconds is equivalent to 12 hours
       maxAge: 43200000,
     });
