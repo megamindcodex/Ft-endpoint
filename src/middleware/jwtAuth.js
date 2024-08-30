@@ -26,29 +26,47 @@ const createToken = (userId) => {
 };
 
 // Function to verify Token
+const jwt = require('jsonwebtoken');
+
 const verifyToken = (req, res, next) => {
   try {
     const jwtSecret = process.env.JWT_SECRET;
+    const authHeader = req.headers["authorization"];
 
-    //Logic to verify token
-    const accessToken = req.cookies["fintech-access-token"];
-    // console.log(accessToken);
+    if (!authHeader) {
+      console.error("Authorization header not set");
+      return res.status(401).json({ error: "Authorization header not set" });
+    }
 
-    if (!accessToken)
-      return res.status(401).json({ error: "Not Authenticated!" });
+    // Correctly split the header to get the token
+    const parts = authHeader.split(' ');
+    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+      console.error("Invalid Authorization header format");
+      return res.status(401).json({ error: "Invalid Authorization header format" });
+    }
 
-    const payload = verify(accessToken, jwtSecret);
+    const accessToken = parts[1];
+    // console.log(`Access token: ${accessToken}`);
 
-    //variables can be created out of thing air using the req object and attacthing the name of the varibale.
+    if (!accessToken) {
+      return res.status(401).json({ error: "No access token provided" });
+    }
+
+    // Verify the token
+    const payload = jwt.verify(accessToken, jwtSecret);
+
+    // Attach user ID to request object
     if (payload) {
-      req.userId = payload.id; //true
-      // console.log(payload.id);
+      req.userId = payload.id;
       next();
+    } else {
+      return res.status(401).json({ error: "Invalid token" });
     }
   } catch (err) {
-    console.error("Error verifing token", err);
-    throw err;
+    console.error("Error verifying token", err);
+    return res.status(401).json({ error: "Invalid token" });
   }
 };
+
 
 module.exports = { createToken, verifyToken };
