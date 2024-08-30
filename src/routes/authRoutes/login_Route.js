@@ -29,7 +29,7 @@ router.post("/login", async (req, res) => {
 
     res.cookie("fintech-access-token", accessToken, {
       httpOnly: false, // Ensure this is false if you need to access the cookie in client-side JS
-      sameSite: "None",  // Explicitly set SameSite to None for cross-site requests
+      // sameSite: "none",  // Explicitly set SameSite to None for cross-site requests
       secure: true, // Set to true if using HTTPS
       path: "/", // path for which the cookie is valid
       //this milliseconds is equivalent to 12 hours
