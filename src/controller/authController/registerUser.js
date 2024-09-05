@@ -69,6 +69,7 @@ const registerUser = async (formData) => {
       dailyTransaction: 0,
       dailyTransactionLimit: 5000,
       dailyTransactionLastResetDate: Date.now(),
+      locationMismatch: false,
     };
 
 
@@ -114,7 +115,7 @@ const registerUser = async (formData) => {
     //   year: timeOfBirth.year,
     // };
 
-    const newUser = {
+    const newUserObject = {
       fullName: fullName,
       phoneNumber: phoneNumber,
       email: email,
@@ -128,10 +129,16 @@ const registerUser = async (formData) => {
       accountNumber: generateAccountNumber(),
     };
     // console.log(newUser);
-    const user = await User.create(newUser);
+    const newUser = await User.create(newUserObject);
+
+    if (!newUser) {
+      return { success: false, status: 400, error: "Error creating user" };
+    }
+
+    const user = await User.findById(newUser._id).populate("finances").populate("transactions").populate("notification");
 
     if (!user) {
-      return { success: false, status: 400, error: "Error creating user" };
+      return { success: true, status: 400, error: "Error finding user" };
     }
 
 
@@ -140,7 +147,7 @@ const registerUser = async (formData) => {
     await finance.save();
     await transactions.save()
     await notification.save()
-    return user;
+    return { success: true, data: user };
   } catch (err) {
     console.error("Error Creating New user", err.message, err);
     return { success: false, status: 500, error: err };

@@ -23,13 +23,13 @@ router.post("/login", async (req, res) => {
 
     const accessToken = createToken(result.data._id);
 
-    if (!accessToken) {
-      throw new Error("accessToken is undefined");
-    }
+    // if (!accessToken) {
+    //   throw new Error("accessToken is undefined");
+    // }
 
-    if (!accessToken) {
-      return res.status(400).json({ error: "No access token found." })
-    }
+    // if (!accessToken) {
+    //   return res.status(400).json({ error: "No access token found." })
+    // }
 
     return res.status(200).json({ cookie: accessToken, userData: result.data, message: "login successful" });
   } catch (err) {

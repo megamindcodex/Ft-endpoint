@@ -2,10 +2,12 @@ const { sign, verify } = require("jsonwebtoken");
 
 const createToken = (userId) => {
   try {
+    console.log(userId);
     const jwtSecret = process.env.JWT_SECRET;
 
     if (!userId) {
-      throw new Error("userId is undefined");
+      res.status(400).json({ error: "userId is required" })
+      console.error("userId is undefined")
     }
 
     //   user Id passed as a parameter from the signupUser file
@@ -13,6 +15,7 @@ const createToken = (userId) => {
 
     const accessToken = sign({ id: userId }, jwtSecret);
     if (!accessToken) {
+      res.status(400).json({ error: "error generating access token. JWT_SECRET might be undefined" })
       console.error(
         "Error generating access token. JWT_SECRET might be undefined."
       );
@@ -32,6 +35,7 @@ const verifyToken = (req, res, next) => {
   try {
     const jwtSecret = process.env.JWT_SECRET;
     const authHeader = req.headers["authorization"];
+    // console.log(req.headers["authorization"])
 
     if (!authHeader) {
       console.error("Authorization header not set");

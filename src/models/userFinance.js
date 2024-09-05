@@ -111,6 +111,10 @@ const financeSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  locationMismatch: {
+    type: Boolean,
+    required: true,
+  }
 });
 
 const Finance = mongoose.model("Finance", financeSchema);
