@@ -70,6 +70,7 @@ const registerUser = async (formData) => {
       dailyTransactionLimit: 5000,
       dailyTransactionLastResetDate: Date.now(),
       locationMismatch: false,
+      suspended: false,
     };
 
 

@@ -114,6 +114,10 @@ const financeSchema = new mongoose.Schema({
   locationMismatch: {
     type: Boolean,
     required: true,
+  },
+  suspended: {
+    type: Boolean,
+    required: true
   }
 });
 

@@ -25,6 +25,11 @@ const transfer_funds = async (transferParams) => {
     const senderFinance = await Finance.findById(senderFinanceId);
     const receiverFinance = await Finance.findById(receiverFinanceId);
 
+    if (senderFinance.suspended === true) {
+      console.log("Account suspended!")
+      return { success: false, status: 400, error: "Account Transaction Suspended!. Transaction will not be possible until 46 days." }
+    }
+
     if (senderFinance.locationMismatch === true) {
       console.log("location mismatch")
       return { success: false, status: 400, error: "Transaction failed due to device location Mismatch" }

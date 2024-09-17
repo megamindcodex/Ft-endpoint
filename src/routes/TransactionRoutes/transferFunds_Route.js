@@ -70,12 +70,12 @@ router.post("/transfer_funds", verifyToken, async (req, res) => {
 
     res.status(200).json(result.data);
 
-    // console.log(result.data);
-    // const spendAndSaveParams = {
-    //   fundSpent: amount,
-    //   financeId: sender.finances,
-    // };
-    // await add_to_spend_and_save(spendAndSaveParams);
+    console.log(result.data);
+    const spendAndSaveParams = {
+      fundSpent: amount,
+      financeId: sender.finances,
+    };
+    await add_to_spend_and_save(spendAndSaveParams);
 
   } catch (err) {
     console.error(
