@@ -4,6 +4,7 @@ const Finance = require("../../models/userFinance");
 const { generateReceipt } = require("../TransactionLogics/generateReceipt");
 const crypto = require("crypto");
 const addNotification = require("../../controller/TransactionLogics/notificationLogic")
+const update_beneficiaries = require("../updateBeneficiaries")
 
 // const mongoose = require("mongoose");
 
@@ -84,6 +85,8 @@ const transfer_funds = async (transferParams) => {
       return { success: false, status: 500, error: err };
     }
 
+
+
     const transactionId = generateTransactionId();
 
     const senderParams = {
@@ -133,6 +136,13 @@ const transfer_funds = async (transferParams) => {
         status: 500,
         error: "couldn't generate Receiver receipt",
       };
+    }
+
+
+    const beneficiariesResult = await update_beneficiaries(senderFinanceId, receiverFinance.userName)
+
+    if (!beneficiariesResult.success) {
+      console.error(" Couldn't update recent", beneficiariesResult.error)
     }
 
     // add notification for the Receiver to the database

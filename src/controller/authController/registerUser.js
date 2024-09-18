@@ -71,6 +71,7 @@ const registerUser = async (formData) => {
       dailyTransactionLastResetDate: Date.now(),
       locationMismatch: false,
       suspended: false,
+      beneficiaries: []
     };
 
 

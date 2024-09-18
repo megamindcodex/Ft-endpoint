@@ -118,7 +118,19 @@ const financeSchema = new mongoose.Schema({
   suspended: {
     type: Boolean,
     required: true
-  }
+  },
+  beneficiaries: [
+    {
+      userName: {
+        type: String,
+        required: true
+      },
+      accountNumber: {
+        type: String,
+        required: true
+      }
+    }
+  ]
 });
 
 const Finance = mongoose.model("Finance", financeSchema);
