@@ -13,6 +13,7 @@ const createToken = (userId) => {
     //   user Id passed as a parameter from the signupUser file
     // is been used as a payload in the generation of the json web token
 
+
     const accessToken = sign({ id: userId }, jwtSecret);
     if (!accessToken) {
       res.status(400).json({ error: "error generating access token. JWT_SECRET might be undefined" })
@@ -29,7 +30,7 @@ const createToken = (userId) => {
 };
 
 // Function to verify Token
-const jwt = require('jsonwebtoken');
+// const jwt = require('jsonwebtoken'); //no need to import again as we have already imported above
 
 const verifyToken = (req, res, next) => {
   try {
@@ -57,7 +58,7 @@ const verifyToken = (req, res, next) => {
     }
 
     // Verify the token
-    const payload = jwt.verify(accessToken, jwtSecret);
+    const payload = verify(accessToken, jwtSecret);
 
     // Attach user ID to request object
     if (payload) {

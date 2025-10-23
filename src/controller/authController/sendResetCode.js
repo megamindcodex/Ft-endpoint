@@ -23,7 +23,7 @@ const send_reset_code = async (email) => {
     const sentEmail = await send_email_to_user(user.email, message);
 
     // if there is an error sending a reset email to the user,
-    // the function still returns a status of 200 but with and extra message.
+    // the function still returns a status of 200 but with an extra message.
     // therfore it also means the user's _resetCode property in the database was updated with a new code successfully
     if (!sentEmail.success) {
       return {

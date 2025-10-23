@@ -55,7 +55,7 @@ const transfer_funds = async (transferParams) => {
       };
     }
 
-    // check if Amount to be sent exceed Dailt Tranaction Limit
+    // check if Amount to be sent exceed Daily Tranaction Limit
     if (senderFinance.dailyTransactionLimit < amount) {
       console.log(
         `your daily Transaction is ${senderFinance.dailyTransactionLimit}. Upgrade your transaction Limit.`

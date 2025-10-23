@@ -3,7 +3,7 @@ const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
-const { run_background_task } = require("./backgroundTask/orchestrator");
+// const { run_background_task } = require("./backgroundTask/orchestrator");
 
 const app = express();
 
@@ -16,13 +16,27 @@ require("dotenv").config({ path: envFile });
 
 
 // Specify multiple origins in an array
-const allowedOrigins = ["http://localhost:5173", "https://test-fintech.netlify.app"];
+
+const allowedOrigins = [
+  // origin for development ---for star-link router
+  "http://192.168.2.121:4500", //ft-websocket-endpoint
+  "http://192.168.2.121:5173",  //ft-client
+
+  // origin for development ---for lucky phone router
+  "http://192.168.127.103:4500", //ft-websocket-endpoint
+  "http://192.168.127.103:5173",  //ft-client
+
+  // origin for production
+  "https://test-fintech.netlify.app" //ft-client
+  //ft-endpoint
+]
 
 app.use(
   cors({
     origin: (origin, callback) => {
       //Allow requests with no origin  (like module apps or curl request)
       if (!origin) return callback(null, true);
+      // console.log(origin)
       if (allowedOrigins.indexOf(origin) === -1) {
         const msg =
           "The CORS polisy for this site does not allow access from the specific Origin.";
@@ -65,8 +79,8 @@ const connectDB = async () => {
 const startServer = async () => {
   try {
     await connectDB();
-    app.listen(PORT, () => {
-      console.log(`server listening on port ${PORT} http://localhost:${PORT}`);
+    app.listen(PORT, "0.0.0.0", () => {
+      console.log(`server listening on port ${PORT} http://0.0.0.0:${PORT}`);
     });
   } catch (err) {
     console.error("Error starting server", err);
